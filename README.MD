@@ -73,7 +73,7 @@ audio-text-bridge/
 1. **Clone the repository (if applicable):**
 
     ```bash
-    git clone <repository-url>
+    git clone https://github.com/thanhnguyen96/audio-text-bridge.git
     cd audio-text-bridge
     ```
 
@@ -104,7 +104,7 @@ audio-text-bridge/
     mkdir -p data/speech-to-text/input
     mkdir -p data/speech-to-text/output
     mkdir -p data/text-to-speech/input
-    mkdir -p data/text-to-speech/tts-audio-output
+    mkdir -p data/text-to-speech/output
     mkdir -p uploads
     ```
 
@@ -163,7 +163,7 @@ The server will typically run on [http://localhost:3000](http://localhost:3000) 
 3. Generated audio files will be saved in:
 
     ```
-    data/text-to-speech/tts-audio-output/
+    data/text-to-speech/output/
     ```
 
 ---
@@ -213,7 +213,7 @@ docker build -t audio-text-bridge .
 Run the Docker container:
 
 ```bash
-docker run -p 3000:3000   -e GEMINI_API_KEY="YOUR_ACTUAL_GEMINI_API_KEY"   -e PORT=3000   -v ./app_uploads:/usr/src/app/uploads   -v ./app_tts_output:/usr/src/app/data/text-to-speech/tts-audio-output   --name my-audio-app   audio-text-bridge
+docker run -p 3000:3000   -e GEMINI_API_KEY="YOUR_ACTUAL_GEMINI_API_KEY"   -e PORT=3000   -v ./app_uploads:/usr/src/app/uploads   -v ./app_tts_output:/usr/src/app/data/text-to-speech/output   --name my-audio-app   audio-text-bridge
 ```
 
 Replace `YOUR_ACTUAL_GEMINI_API_KEY` with your actual key. Adjust the host port if needed.
