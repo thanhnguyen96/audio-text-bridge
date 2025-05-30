@@ -1,0 +1,44 @@
+diff --git a/node_modules/edge-tts-node/dist/MsEdgeTTS.js b/node_modules/edge-tts-node/dist/MsEdgeTTS.js
+index a443e92..92b4be9 100644
+--- a/node_modules/edge-tts-node/dist/MsEdgeTTS.js
++++ b/node_modules/edge-tts-node/dist/MsEdgeTTS.js
+@@ -180,11 +180,24 @@ class MsEdgeTTS {
+                     this._pushData({ type: "audio", data: data }, requestId);
+                 }
+                 else {
+-                    mdata = buffer_1.Buffer.isBuffer(mdata) ? mdata : mdata['data'];
+-                    const buffer = buffer_1.Buffer.from(mdata);
++                    // This block is entered if mdata (which is m.data from WebSocket)
++                    // is not a string and not a Node.js Buffer.
++                    // If this._arraybuffer is true (due to setConfig({ arraybuffer: true })),
++                    // mdata is expected to be an ArrayBuffer.
++                    let buffer; // This will be our Node.js Buffer
++                    if (mdata instanceof ArrayBuffer) {
++                        buffer = buffer_1.Buffer.from(mdata); // Correctly convert ArrayBuffer to Node.js Buffer
++                    } else {
++                        // If mdata is not an ArrayBuffer here, it's an unexpected type.
++                        // The original code's logic `mdata['data']` would lead to `undefined`
++                        // if mdata was an ArrayBuffer (as ArrayBuffer has no 'data' property).
++                        this._log("Error: TTS component received unexpected data type when ArrayBuffer was expected. Type:", typeof mdata, "Value:", mdata);
++                        this._ws.emit("error", new Error(`TTS: Received unexpected data type: ${typeof mdata}. Expected ArrayBuffer.`));
++                        return; // Stop processing this malformed/unexpected message
++                    }
+                     const message = buffer.toString();
+                     const requestId = /X-RequestId:(.*?)\r\n/gm.exec(message)[1];
+-                    this._log(message.includes("Path:audio"), buffer_1.Buffer.isBuffer(mdata), mdata instanceof ArrayBuffer);
++                    this._log(message.includes("Path:audio"), `original m.data was ${mdata instanceof ArrayBuffer ? 'ArrayBuffer' : typeof mdata}`, "now Node.js Buffer");
+                     if (message.includes("Path:turn.start")) {
+                         // start of turn, ignore
+                     }
+@@ -195,7 +208,10 @@ class MsEdgeTTS {
+                     else if (message.includes("Path:response")) {
+                         // context response, ignore
+                     }
+-                    else if (message.includes("Path:audio") && buffer_1.Buffer.isBuffer(mdata)) {
++                    else if (message.includes("Path:audio")) {
++                        // The previous condition `&& buffer_1.Buffer.isBuffer(mdata)` was problematic
++                        // as `mdata` referred to the potentially undefined reassigned variable.
++                        // Now, `buffer` is a Node.js Buffer.
+                         this._pushAudioData(buffer, requestId);
+                     }
+                     else {

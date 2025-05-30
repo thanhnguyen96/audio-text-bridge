@@ -1,0 +1,26 @@
+{
+  "name": "audio-text-bridge",
+  "version": "1.0.0",
+  "description": "Audio to text",
+  "license": "MIT",
+  "author": "Thanh Nguyen",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "run test",
+    "start": "node index.js",
+    "stt": "node index.js --task=stt",
+    "tts": "node index.js --task=tts",
+    "postinstall": "patch-package"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "dotenv": "^16.5.0",
+    "edge-tts-node": "^1.3.2",
+    "express": "^4.19.2",
+    "multer": "^2.0.0"
+  },
+  "devDependencies": {
+    "patch-package": "^8.0.0"
+  }
+}

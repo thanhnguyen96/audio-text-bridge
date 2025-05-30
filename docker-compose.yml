@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: audio-text-bridge-app
+    ports:
+      - "${PORT:-3000}:${PORT:-3000}" # Use PORT from .env for both host and container-internal target
+    env_file:
+      - .env # Loads environment variables from .env file
+    volumes:
+      # Mounts host directories to container directories for persistent data
+      # Create these directories on your host if they don't exist
+      # or use named volumes for Docker to manage them.
+      - ./app_uploads:/usr/src/app/uploads
+      - ./app_tts_output:/usr/src/app/data/text-to-speech/tts-audio-output
+    # If you want the container to restart automatically if it crashes
+    # restart: unless-stopped
+
+volumes:
+  app_uploads: # You can define named volumes here if you prefer Docker to manage them
+  app_tts_output:
